@@ -1,0 +1,24 @@
+# Core dependencies
+openai>=1.0.0
+python-dotenv>=1.0.0
+numpy>=1.24.0
+
+# CLI dependencies
+argparse>=1.4.0
+
+# Web interface dependencies
+flask>=2.0.0
+
+# Additional dependencies
+httpx>=0.27.0
+pypdf>=4.0.0
+
+# New packages
+spacy>=3.7.2
+cryptography>=42.0.0
+redis>=5.0.0
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+opentelemetry-sdk>=1.24.0
+opentelemetry-exporter-otlp>=1.24.0
+prometheus-client>=0.20.0

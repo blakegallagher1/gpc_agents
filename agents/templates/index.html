@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>East Baton Rouge Zoning Code Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .question-form {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+        .response {
+            background-color: #e8f4f8;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            white-space: pre-wrap;
+            display: none;
+        }
+        .history {
+            margin-top: 40px;
+        }
+        .history-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .history-question {
+            font-weight: bold;
+        }
+        .history-answer {
+            white-space: pre-wrap;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .history-timestamp {
+            color: #777;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>East Baton Rouge Zoning Code Assistant</h1>
+    
+    <div class="question-form">
+        <h2>Ask a Question</h2>
+        <textarea id="question" placeholder="Enter your question about the East Baton Rouge Zoning Code..."></textarea>
+        <button id="submit">Submit Question</button>
+    </div>
+    
+    <div class="loading" id="loading">
+        Processing your question...
+    </div>
+    
+    <div class="response" id="response"></div>
+    
+    <div class="history">
+        <h2>Recent Questions</h2>
+        {% if history %}
+            {% for question, answer, timestamp in history %}
+                <div class="history-item">
+                    <div class="history-question">Q: {{ question }}</div>
+                    <div class="history-answer">{{ answer }}</div>
+                    <div class="history-timestamp">{{ timestamp }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No question history yet.</p>
+        {% endif %}
+    </div>
+    
+    <script>
+        document.getElementById('submit').addEventListener('click', async function() {
+            const question = document.getElementById('question').value.trim();
+            if (!question) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            // Show loading, hide response
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('response').style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+                
+                // Show response
+                const responseElement = document.getElementById('response');
+                responseElement.textContent = data.answer;
+                responseElement.style.display = 'block';
+                
+                // Reload page to refresh history (simple approach)
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
